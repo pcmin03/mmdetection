@@ -18,7 +18,6 @@ from mmdet.datasets import build_dataset
 from mmdet.models import build_detector
 from mmdet.utils import collect_env, get_root_logger
 
-
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
     parser.add_argument('config', help='train config file path')
@@ -84,10 +83,17 @@ def parse_args():
     return args
 
 
+
 def main():
     args = parse_args()
 
     cfg = Config.fromfile(args.config)
+    
+    # save_path_dir = os.path.join(base_path, "work_dir")
+    # if not os.path.exists(save_path_dir):
+    #     os.makedirs(save_path_dir)
+
+    # modify num classes of the model in box head
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
     # set cudnn_benchmark
@@ -100,7 +106,7 @@ def main():
         cfg.work_dir = args.work_dir
     elif cfg.get('work_dir', None) is None:
         # use config filename as default work_dir if cfg.work_dir is None
-        cfg.work_dir = osp.join('./work_dirs',
+        cfg.work_dir = osp.join('./work_dirsv2',
                                 osp.splitext(osp.basename(args.config))[0])
     if args.resume_from is not None:
         cfg.resume_from = args.resume_from
@@ -159,7 +165,6 @@ def main():
     model.init_weights()
 
     datasets = [build_dataset(cfg.data.train)]
-    
     if len(cfg.workflow) == 2:
         val_dataset = copy.deepcopy(cfg.data.val)
         val_dataset.pipeline = cfg.data.train.pipeline
