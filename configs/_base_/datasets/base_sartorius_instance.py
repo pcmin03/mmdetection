@@ -9,16 +9,19 @@ albu_train_transforms = [
     dict(type='RandomBrightnessContrast', brightness_limit=0.2,
          contrast_limit=0.2, p=0.5),
 #     dict(type='IAAAffine', shear=(-10.0, 10.0), p=0.4),
-    dict(type='CLAHE', p=0.5)
-    # dict(
-    #     type="OneOf",
-    #     transforms=[
-    #         dict(type="GaussianBlur", p=1.0, blur_limit=7),
-    #         dict(type="MedianBlur", p=1.0, blur_limit=7),
-    #     ],
-    #     p=0.4,
-    # ),
+    dict(type='CLAHE', p=0.5),
+    dict(
+        type="OneOf",
+        transforms=[
+            dict(type="GaussianBlur", p=1.0, blur_limit=7),
+            dict(type="MedianBlur", p=1.0, blur_limit=7),
+        ],
+        p=0.4,
+    ),
 ]
+
+hard_argument = [dict(type = 'Mosaic'),
+                dict(type = 'MixUp')]
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -26,7 +29,6 @@ train_pipeline = [
     dict(type='Resize', img_scale=[(1333, 800), (1690, 960)], keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
     
-    # dict(type="Mosaic"),
     dict(
         type='Albu',
         transforms=albu_train_transforms,
@@ -39,9 +41,7 @@ train_pipeline = [
         keymap=dict(img='image', gt_bboxes='bboxes', gt_masks='masks'),
         update_pad_shape=False,
         skip_img_without_anno=True),
-
-    # dict(type="MixUp", min_bbox_size=5, pad_val=img_norm_cfg["mean"][0]),
-
+    dict = type="Mosaic", p=0.25, min_buffer_size=4, pad_val=img_norm_cfg["mean"][::-1]),
     dict(
         type='Normalize',
         mean=[128, 128, 128],
@@ -68,7 +68,7 @@ test_pipeline = [
         ])
 ]
 data = dict(
-    samples_per_gpu=1,
+    samples_per_gpu=4,
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,

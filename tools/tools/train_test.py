@@ -86,9 +86,8 @@ def parse_args():
 
 def main():
     args = parse_args()
-    print(args)
-    cfg = Config.fromfile(args.config)
 
+    cfg = Config.fromfile(args.config)
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
     # set cudnn_benchmark
@@ -101,7 +100,7 @@ def main():
         cfg.work_dir = args.work_dir
     elif cfg.get('work_dir', None) is None:
         # use config filename as default work_dir if cfg.work_dir is None
-        cfg.work_dir = osp.join('./work_dirs_test',
+        cfg.work_dir = osp.join('./work_dirs',
                                 osp.splitext(osp.basename(args.config))[0])
     if args.resume_from is not None:
         cfg.resume_from = args.resume_from
@@ -160,7 +159,7 @@ def main():
     model.init_weights()
 
     datasets = [build_dataset(cfg.data.train)]
-    
+    print(cfg.data.train,'asdfasdfasdfasdfasdfads')
     if len(cfg.workflow) == 2:
         val_dataset = copy.deepcopy(cfg.data.val)
         val_dataset.pipeline = cfg.data.train.pipeline
